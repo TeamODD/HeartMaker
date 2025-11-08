@@ -5,6 +5,7 @@ public class GameOverManager : MonoBehaviour
     public GameObject leftBoxArea;
     public GameObject rightBoxArea;
     public float maxDiff = 10;
+    public bool isGameOver = false;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -24,6 +25,7 @@ public class GameOverManager : MonoBehaviour
         // 여기에 게임 오버시 실행할 것들 작성
         if(diff >= maxDiff)
         {
+            isGameOver = true;
             Debug.Log("게임 오버");
         }
     }
