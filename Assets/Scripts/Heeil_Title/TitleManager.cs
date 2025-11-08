@@ -63,7 +63,8 @@ public class TitleManager : MonoBehaviour
     public void OnClickStart()
     {
         if (string.IsNullOrEmpty(gameSceneName) || bg == null) return;
-
+        sfx.PlayOneShot(clickClip);
+        
         // if (buttonGroup) buttonGroup.SetActive(false);
         AllButtonDisable();
         DOTween.Kill(bg);
