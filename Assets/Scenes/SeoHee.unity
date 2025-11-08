@@ -328,7 +328,9 @@ MonoBehaviour:
   topRowCount: 8
   totalRows: 3
   bubbleSpacing: 1
-  startYOffset: 3
+  rowOffset: 0.5
+  seesaw: {fileID: 0}
+  gapFromSeesaw: 0.3
   gemPrefabs:
   - {fileID: 2028945034}
   - {fileID: 1805694683}

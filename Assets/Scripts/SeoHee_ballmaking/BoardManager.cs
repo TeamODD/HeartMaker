@@ -5,10 +5,11 @@ using System.Linq;
 public class BoardManager : MonoBehaviour
 {
     [Header("보드 설정")]
-    public int topRowCount = 12;
+    public int topRowCount = 13;
     public int totalRows = 6;
     public float bubbleSpacing = 1f;
     public float rowOffset = 0.5f;
+    public float verticalSpacing = 1f;
 
     [Header("시소 참조")]
     public SeesawLean seesaw;
@@ -22,7 +23,7 @@ public class BoardManager : MonoBehaviour
 
     void Awake()
     {
-        RemoveSceneGems(); // 씬에 있는 구슬 제거
+        RemoveSceneGems();
     }
 
     void Start()
@@ -39,9 +40,9 @@ public class BoardManager : MonoBehaviour
             if (gem != null)
             {
 #if UNITY_EDITOR
-                DestroyImmediate(child.gameObject); // 에디터에서 즉시 제거
+                DestroyImmediate(child.gameObject);
 #else
-                Destroy(child.gameObject); // 런타임에서는 일반 제거
+                Destroy(child.gameObject);
 #endif
             }
         }
@@ -54,47 +55,77 @@ public class BoardManager : MonoBehaviour
         float seesawBottomY = GetSeesawBottomY();
         float startY = seesawBottomY - gapFromSeesaw;
 
-        float gemRadius = bubbleSpacing / 2f;
-        float verticalSpacing = gemRadius * Mathf.Sqrt(3); // = bubbleSpacing * 0.866f
+        int[] rowGemCounts = new int[] { 13, 12, 0, 10, 0, 8 };
 
-        for (int row = 0; row < totalRows; row++)
+        for (int row = 0; row < rowGemCounts.Length; row++)
         {
-            int bubblesInRow = topRowCount - row;
-            if (bubblesInRow < 1) break;
-
-            float offsetX = (row % 2 == 0) ? 0f : gemRadius;
-
+            int bubblesInRow = rowGemCounts[row];
             List<Gem> gemRow = new List<Gem>();
+
+            if (bubblesInRow == 0)
+            {
+                allGems.Add(gemRow);
+                continue;
+            }
+
+            float rowWidth = (bubblesInRow - 1f) * bubbleSpacing;
+            float startX = -rowWidth / 2f;
+
             for (int col = 0; col < bubblesInRow; col++)
             {
-                float posX = (col - (bubblesInRow - 1) / 2f) * bubbleSpacing + offsetX;
-                float posY = startY - (row * verticalSpacing);
-
+                float posX = startX + col * bubbleSpacing;
+                float posY = startY - row * verticalSpacing;
                 Vector3 spawnPos = new Vector3(posX, posY, 0f);
-                Gem newGem = SpawnGem(spawnPos);
+
+                // 구슬 타입 중복 연속 3개 방지 로직
+                int prefabIndex = 0;
+                GemType candidateType;
+                while (true)
+                {
+                    prefabIndex = Random.Range(0, gemPrefabs.Length);
+                    GameObject prefab = gemPrefabs[prefabIndex];
+                    Gem prefabGem = prefab.GetComponent<Gem>();
+                    if (prefabGem == null)
+                    {
+                        Debug.LogError("gemPrefabs[" + prefabIndex + "]에 Gem 컴포넌트가 없습니다.");
+                        continue;
+                    }
+                    candidateType = prefabGem.gemType;
+
+                    if (col > 1 &&
+                        gemRow[col - 1] != null &&
+                        gemRow[col - 2] != null &&
+                        gemRow[col - 1].gemType == candidateType &&
+                        gemRow[col - 2].gemType == candidateType)
+                    {
+                        // 바로 앞 두 구슬과 같은 타입이면 다시 뽑기
+                        continue;
+                    }
+                    break;
+                }
+
+                GameObject gemObj = Instantiate(gemPrefabs[prefabIndex], spawnPos, Quaternion.identity);
+                gemObj.transform.parent = transform;
+
+                Gem newGem = gemObj.GetComponent<Gem>();
+                if (newGem == null)
+                {
+                    Debug.LogError("생성된 구슬에 Gem 컴포넌트가 없습니다.");
+                    continue;
+                }
                 gemRow.Add(newGem);
+
+                Rigidbody2D rb = gemObj.GetComponent<Rigidbody2D>();
+                if (rb == null) rb = gemObj.AddComponent<Rigidbody2D>();
+                rb.bodyType = RigidbodyType2D.Kinematic;
+                rb.gravityScale = 0f;
+                rb.constraints = RigidbodyConstraints2D.FreezeAll;
             }
+
             allGems.Add(gemRow);
         }
 
         CheckMatches();
-    }
-
-    Gem SpawnGem(Vector3 spawnPos)
-    {
-        int index = Random.Range(0, gemPrefabs.Length);
-        GameObject gemObj = Instantiate(gemPrefabs[index], spawnPos, Quaternion.identity);
-        gemObj.transform.parent = transform;
-
-        Gem newGem = gemObj.GetComponent<Gem>();
-
-        Rigidbody2D rb = gemObj.GetComponent<Rigidbody2D>();
-        if (rb == null) rb = gemObj.AddComponent<Rigidbody2D>();
-        rb.bodyType = RigidbodyType2D.Kinematic;
-        rb.gravityScale = 0f;
-        rb.constraints = RigidbodyConstraints2D.FreezeAll;
-
-        return newGem;
     }
 
     float GetSeesawBottomY()
@@ -145,7 +176,9 @@ public class BoardManager : MonoBehaviour
         foreach (var gem in gemsToDestroy)
         {
             if (gem != null)
+            {
                 Destroy(gem.gameObject);
+            }
         }
     }
 }
