@@ -157,7 +157,7 @@ public class DeleteBubble : MonoBehaviour
         Vector2 currentPos = currentArea.transform.position;
 
         // 고정된 반지름을 이용해 서치
-        float bubbleRadius = 1f;
+        float bubbleRadius = 0.27f;
 
         Collider2D[] neighbors = Physics2D.OverlapCircleAll(
             currentPos,
