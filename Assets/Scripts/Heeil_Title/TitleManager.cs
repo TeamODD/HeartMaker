@@ -1,17 +1,11 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using UnityEngine.EventSystems;
-using System;
-
 public class TitleManager : MonoBehaviour
 {
     [Header("=== 설정 ===")]
     [Tooltip("Start 버튼이 로드할 씬 이름")]
     [SerializeField] private string gameSceneName = "Game";
-
-    [Tooltip("패널을 열 때 다른 패널은 자동으로 닫기")]
-    [SerializeField] private bool closeOthersWhenOpen = true;
 
     [Header("=== 패널 참조 ===")]
     [SerializeField] private GameObject howPanel;
