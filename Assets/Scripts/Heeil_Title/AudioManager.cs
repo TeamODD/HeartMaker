@@ -1,94 +1,83 @@
+// AudioManager.cs
+using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Audio;
-using UnityEngine.SceneManagement;
 
 public class AudioManager : MonoBehaviour
 {
     public static AudioManager I { get; private set; }
 
-    [Header("Audio Mixer")]
-    [SerializeField] private AudioMixer mixer;
+    [SerializeField] private AudioMixer mixer;               
     [SerializeField] private string masterParam = "MasterVol";
     [SerializeField] private string bgmParam    = "BGMVol";
     [SerializeField] private string sfxParam    = "SFXVol";
 
-    [Header("Audio Sources (Mixer 라우팅)")]
-    [SerializeField] private AudioSource bgmSource;   // Mixer의 BGM 그룹에 연결
-    [SerializeField] private AudioSource sfxSource;   // Mixer의 SFX 그룹에 연결
+    public static event Action VolumesApplied;
+    public bool IsReady { get; private set; }
+    public AudioMixer Mixer => mixer;
+    public AudioMixerGroup SfxGroup { get; private set; }
 
-    const string KEY_MASTER="vol_master", KEY_BGM="vol_bgm", KEY_SFX="vol_sfx";
+    const string KEY_MASTER = "vol.master";
+    const string KEY_BGM    = "vol.bgm";
+    const string KEY_SFX    = "vol.sfx";
+    const float MIN_DB = -80f, MAX_DB = 0f;
 
-    void Awake()
+    float master01, bgm01, sfx01;
+
+    private void Awake()
     {
-        if (I != null) { Destroy(gameObject); return; }
+        if (I != null && I != this) { Destroy(gameObject); return; }
         I = this;
         DontDestroyOnLoad(gameObject);
+
         LoadVolumes();
-        SceneManager.sceneLoaded += OnSceneLoaded;
+        ApplyAll();
+        StartCoroutine(LateBoot()); // 1프레임 뒤 한 번 더(초기화 순서 이슈 대비)
+        IsReady = true;
     }
-    void OnDestroy()
+    IEnumerator LateBoot()
     {
-        if (I == this) SceneManager.sceneLoaded -= OnSceneLoaded;
+        yield return null;          // 한 프레임 대기
+        ApplyAll();                 // 2차 적용
+        VolumesApplied?.Invoke();
     }
-
-    // 씬 로드 시: 이 씬의 BGMSource를 찾아 즉시 재생/정지
-    void OnSceneLoaded(Scene _, LoadSceneMode __)
+    // 외부에서 mixer 주입하고 싶을 때(부트스트랩퍼)
+    public void SetMixer(AudioMixer m)
     {
-        var tag = FindAnyObjectByType<BGMSource>();
-
-        if (tag) PlayBGM(tag.clip, tag.loop, tag.volume01);
-        else     StopBGM();
+        mixer = m;
+        var groups = mixer.FindMatchingGroups("SFX");
+        if (groups != null && groups.Length > 0) SfxGroup = groups[0];
+        ApplyAll();
     }
 
-    // ===== 볼륨(슬라이더) =====
-    public void SetMaster(float v) => SetDb(masterParam, v, KEY_MASTER);
-    public void SetBGM   (float v) => SetDb(bgmParam,    v, KEY_BGM);
-    public void SetSFX   (float v) => SetDb(sfxParam,    v, KEY_SFX);
+    public void SetMaster01(float v){ master01 = Mathf.Clamp01(v); Apply(masterParam, master01); PlayerPrefs.SetFloat(KEY_MASTER, master01); }
+    public void SetBGM01   (float v){ bgm01    = Mathf.Clamp01(v); Apply(bgmParam,    bgm01);    PlayerPrefs.SetFloat(KEY_BGM,    bgm01);    }
+    public void SetSFX01   (float v){ sfx01    = Mathf.Clamp01(v); Apply(sfxParam,    sfx01);    PlayerPrefs.SetFloat(KEY_SFX,    sfx01);    }
 
-    void SetDb(string param, float linear01, string key)
-    {
-        float v = Mathf.Clamp01(linear01);
-        float dB = (v <= 0.0001f) ? -80f : Mathf.Log10(v) * 20f;
-        mixer.SetFloat(param, dB);
-        PlayerPrefs.SetFloat(key, v);
-        PlayerPrefs.Save();
-    }
+    public float GetMaster01()=> master01;
+    public float GetBGM01()   => bgm01;
+    public float GetSFX01()   => sfx01;
 
     void LoadVolumes()
     {
-        SetMaster(PlayerPrefs.GetFloat(KEY_MASTER, 1f));
-        SetBGM   (PlayerPrefs.GetFloat(KEY_BGM,    1f));
-        SetSFX   (PlayerPrefs.GetFloat(KEY_SFX,    1f));
+        master01 = PlayerPrefs.GetFloat(KEY_MASTER, 1f);
+        bgm01    = PlayerPrefs.GetFloat(KEY_BGM,    1f);
+        sfx01    = PlayerPrefs.GetFloat(KEY_SFX,    1f);
     }
 
-    // ===== 재생 API (즉시 전환) =====
-    public void PlayBGM(AudioClip clip, bool loop = true, float volume01 = 1f)
+    void ApplyAll()
     {
-        if (!bgmSource) return;
-
-        // 같은 클립이 이미 재생 중이면 무시
-        if (bgmSource.isPlaying && bgmSource.clip == clip) return;
-
-        bgmSource.Stop();
-        bgmSource.clip = clip;
-        bgmSource.loop = loop;
-        bgmSource.volume = Mathf.Clamp01(volume01); // Mixer 전/후 원하는 쪽 기준으로 사용
-        if (clip) bgmSource.Play();
+        if (mixer == null) return;
+        Apply(masterParam, master01);
+        Apply(bgmParam,    bgm01);
+        Apply(sfxParam,    sfx01);
     }
 
-    public void StopBGM()
+    void Apply(string param, float v01)
     {
-        if (bgmSource) bgmSource.Stop();
+        if (mixer == null) return;
+        float db = (v01 <= 0.0001f) ? MIN_DB : Mathf.Log10(v01) * 20f;
+        mixer.SetFloat(param, Mathf.Clamp(db, MIN_DB, MAX_DB));
     }
-
-    public void PlaySFX(AudioClip clip, float volume01 = 1f)
-    {
-        if (!sfxSource || !clip) return;
-        sfxSource.PlayOneShot(clip, Mathf.Clamp01(volume01));
-    }
-
-    // 슬라이더 초기 표시용 Getter
-    public float GetMaster01() => PlayerPrefs.GetFloat(KEY_MASTER, 1f);
-    public float GetBGM01()    => PlayerPrefs.GetFloat(KEY_BGM,    1f);
-    public float GetSFX01()    => PlayerPrefs.GetFloat(KEY_SFX,    1f);
 }
