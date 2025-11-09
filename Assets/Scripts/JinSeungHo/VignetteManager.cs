@@ -16,7 +16,7 @@ public class VignetteManager : MonoBehaviour
     private Vignette vig;
     private float currentIntensity;     // 현재 비네트 강도
     private float targetIntensity;      // 목표 비네트 강도
-    public float changeSpeed = 5;       // 비네트 변화 속도
+    public float changeSpeed = 1;       // 비네트 변화 속도
     private float intensityPerBubble;         // 버블 하나당 변화될 비네트 강도
     public int maxDiffBubble;
     // 층별 감지 박스를 저장할 리스트 변수
@@ -123,7 +123,7 @@ public class VignetteManager : MonoBehaviour
         if (secondToLastFloorBubbleCount > 0)
         {
             targetIntensity = maxIntensity;
-            currentIntensity = Mathf.Lerp(currentIntensity, targetIntensity, Time.deltaTime / changeSpeed * 10);
+            currentIntensity = Mathf.Lerp(currentIntensity, targetIntensity, Time.deltaTime / changeSpeed);
             vig.intensity.value = currentIntensity;     // 비네트 세기 적용
         }
 
