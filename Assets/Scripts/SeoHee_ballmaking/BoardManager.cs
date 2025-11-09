@@ -107,16 +107,33 @@ public class BoardManager : MonoBehaviour
         return seesaw.transform.position.y;
     }
 
-    // 발사된 구슬이 보드에 붙을 때 호출
-    public void RegisterGemAt(int row, int col, Gem gem)
+    // 충돌 혹은 붙음이 발생했을 때 이 메서드를 호출하도록 BoardManager가 직접 관리
+    public void OnGemAttached(GameObject gemObj)
     {
-        Debug.Log($"[등록] 구슬 등록됨: ({row}, {col}) 타입: {gem.gemType}");
+        if (isInitialBoard) return;
 
-        while (allGems.Count <= row)
-            allGems.Add(new List<Gem>());
+        Gem gem = gemObj.GetComponent<Gem>();
+        if (gem == null) return;
 
-        while (allGems[row].Count <= col)
-            allGems[row].Add(null);
+        Vector3 worldPos = gemObj.transform.position;
+
+        float seesawBottomY = GetSeesawBottomY();
+        float startY = seesawBottomY - gapFromSeesaw;
+
+        int row = Mathf.RoundToInt((startY - worldPos.y) / verticalSpacing);
+        if (row < 0 || row >= allGems.Count) return;
+
+        int bubblesInRow = allGems[row].Count;
+        if (bubblesInRow == 0) return;
+
+        float rowWidth = (bubblesInRow - 1f) * bubbleSpacing;
+        float startX = -rowWidth / 2f;
+        float xOffset = worldPos.x - startX;
+        int col = Mathf.RoundToInt(xOffset / bubbleSpacing);
+
+        if (col < 0 || col >= bubblesInRow) return;
+
+        Debug.Log($"[등록] 구슬 위치: world({worldPos.x:F2},{worldPos.y:F2}) → (row={row}, col={col}), 타입={gem.gemType}");
 
         allGems[row][col] = gem;
 
@@ -125,35 +142,38 @@ public class BoardManager : MonoBehaviour
 
     public void CheckMatchesFromGem(int startRow, int startCol)
     {
-        if (isInitialBoard) return;
-        if (allGems[startRow][startCol] == null) return;
+        Gem startGem = allGems[startRow][startCol];
+        if (startGem == null) return;
 
-        GemType type = allGems[startRow][startCol].gemType;
-        bool[,] visited = new bool[allGems.Count, allGems.Max(r => r.Count)];
+        GemType type = startGem.gemType;
+
+        int maxCols = allGems.Max(r => r.Count);
+        bool[,] visited = new bool[allGems.Count, maxCols];
+
         List<Vector2Int> group = GetConnectedGroup(startRow, startCol, type, visited);
 
-        Debug.Log($"[검사] 연결된 그룹 크기: {group.Count}");
+        Debug.Log($"[검사] 연결된 그룹 크기: {group.Count} 타입={type}");
 
         if (group.Count >= 3)
         {
             foreach (var pos in group)
             {
-                Gem gem = allGems[pos.x][pos.y];
+                int r = pos.x;
+                int c = pos.y;
+                if (r < 0 || r >= allGems.Count) continue;
+                if (c < 0 || c >= allGems[r].Count) continue;
+
+                Gem gem = allGems[r][c];
                 if (gem != null)
                 {
-                    Debug.Log($"[삭제] 구슬 제거됨: ({pos.x}, {pos.y}) 타입: {gem.gemType}");
-                    allGems[pos.x][pos.y] = null;
-#if UNITY_EDITOR
-                    DestroyImmediate(gem.gameObject);
-#else
+                    Debug.Log($"[삭제] 구슬 제거됨: (row={r}, col={c}) 타입={gem.gemType}");
+                    allGems[r][c] = null;
                     Destroy(gem.gameObject);
-#endif
                 }
             }
         }
     }
 
-    // 전방향 탐색 (8방향)
     List<Vector2Int> GetConnectedGroup(int startRow, int startCol, GemType type, bool[,] visited)
     {
         List<Vector2Int> group = new List<Vector2Int>();
@@ -182,8 +202,10 @@ public class BoardManager : MonoBehaviour
                 if (newRow < 0 || newRow >= allGems.Count) continue;
                 if (newCol < 0 || newCol >= allGems[newRow].Count) continue;
                 if (visited[newRow, newCol]) continue;
-                if (allGems[newRow][newCol] == null) continue;
-                if (allGems[newRow][newCol].gemType != type) continue;
+
+                Gem neighbor = allGems[newRow][newCol];
+                if (neighbor == null) continue;
+                if (neighbor.gemType != type) continue;
 
                 visited[newRow, newCol] = true;
                 queue.Enqueue(new Vector2Int(newRow, newCol));
