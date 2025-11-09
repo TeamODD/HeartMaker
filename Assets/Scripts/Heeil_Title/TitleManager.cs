@@ -2,12 +2,15 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using DG.Tweening;
+using UnityEngine.Analytics;
+using UnityEngine.EventSystems;
 public class TitleManager : MonoBehaviour
 {
     [Header("=== 설정 ===")]
     [Tooltip("Start 버튼이 로드할 씬 이름")]
     [SerializeField] private string gameSceneName = "Game";
     [SerializeField] private AudioClip clickClip;
+    [SerializeField] private AudioClip hoverClip;
     [SerializeField] private AudioSource sfx;
 
     [Header("=== 버튼 참조 ===")]
@@ -17,7 +20,7 @@ public class TitleManager : MonoBehaviour
     [SerializeField] private GameObject howPanel;
     [SerializeField] private GameObject settingPanel;
     [SerializeField] private GameObject MenuBackPanel;
-    [SerializeField] private GameObject resentPanel;
+    [SerializeField] private GameObject currentPanel;
 
     [Header("=== 최초 선택 포커스(선택사항) ===")]
     [SerializeField] private Selectable titleFirst;   // 타이틀 화면 기본 선택(예: Start 버튼)
@@ -48,6 +51,8 @@ public class TitleManager : MonoBehaviour
         howPanel.SetActive(false);
         settingPanel.SetActive(false);
         MenuBackPanel.SetActive(false);
+
+        AllButtonEnable();
     }void Awake()
     {
         // 시작: ‘살짝 위’에서 확대된 상태로 대기
@@ -58,6 +63,10 @@ public class TitleManager : MonoBehaviour
     void Update()
     {
         // bg.anchoredPosition = endPan + new Vector2(startOffsetX, startOffsetY);
+         if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            PanelOnOff(currentPanel, false);
+        }
     }
 
     public void OnClickStart()
@@ -94,7 +103,7 @@ public class TitleManager : MonoBehaviour
         sfx.PlayOneShot(clickClip);
         
         PanelOnOff(howPanel, true);
-        resentPanel = howPanel;
+        currentPanel = howPanel;
     }
 
     // --- Setting ---
@@ -102,30 +111,49 @@ public class TitleManager : MonoBehaviour
     {
         sfx.PlayOneShot(clickClip);
         PanelOnOff(settingPanel, true);
-        resentPanel = settingPanel;
+        currentPanel = settingPanel;
     }
     public void OnClickBackGround()
     {
         sfx.PlayOneShot(clickClip);
-        PanelOnOff(resentPanel, false);
+        PanelOnOff(currentPanel, false);
     }
 
     // --- Quit ---
     public void OnClickQuit()
     {
         // 에디터/빌드 환경 모두 종료 지원
-        #if UNITY_EDITOR
-                UnityEditor.EditorApplication.isPlaying = false;
-        #else
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
                 Application.Quit();
-        #endif
+#endif
     }
+    
     void AllButtonDisable()
     {
         if (buttonGroup == null) return;
 
+        // 1) 버튼 끄기
         Button[] buttons = buttonGroup.GetComponentsInChildren<Button>(true);
-        foreach (Button btn in buttons) btn.enabled = false;
+        foreach (Button btn in buttons)
+            btn.enabled = false;
+        AudioSource[] audios = buttonGroup.GetComponentsInChildren<AudioSource>(true);
+        foreach (AudioSource a in audios)
+            a.enabled = false;
+
+    }
+    void AllButtonEnable()
+    {
+        if (buttonGroup == null) return;
+
+        // 1) 버튼 끄기
+        Button[] buttons = buttonGroup.GetComponentsInChildren<Button>(true);
+        foreach (Button btn in buttons)
+            btn.enabled = true;
+        AudioSource[] audios = buttonGroup.GetComponentsInChildren<AudioSource>(true);
+        foreach (AudioSource a in audios)
+            a.enabled = true;
     }
 
     private void PanelOnOff(GameObject target, bool onOff)

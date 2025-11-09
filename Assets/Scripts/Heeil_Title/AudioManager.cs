@@ -7,7 +7,8 @@ using UnityEngine.Audio;
 public class AudioManager : MonoBehaviour
 {
     public static AudioManager I { get; private set; }
-
+    
+    [Header("=== Mixer & Params ===")]
     [SerializeField] private AudioMixer mixer;               
     [SerializeField] private string masterParam = "MasterVol";
     [SerializeField] private string bgmParam    = "BGMVol";
