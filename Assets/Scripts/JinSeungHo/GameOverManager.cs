@@ -11,12 +11,6 @@ public class GameOverManager : MonoBehaviour
     public float maxDiff = 10;
     public bool isGameOver = false;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
-
     // Update is called once per frame
     void Update()
     {
@@ -27,7 +21,7 @@ public class GameOverManager : MonoBehaviour
 
         // 게임 오버 조건 충족시 게임 오버
         // 여기에 게임 오버시 실행할 것들 작성
-        if(diff >= maxDiff)
+        if(diff >= maxDiff || isGameOver)
         {
             isGameOver = true;
             seesaw.GetComponent<SeesawLean>().enabled = false;  // 시소의 코드에 의한 기울임을 멈춤

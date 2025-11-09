@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -12,11 +13,15 @@ public class MergeBubble : MonoBehaviour
     private Collision2D collidedObj;
 
     private bool isCollide;
+    public float waitTime = 0.5f;
 
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         collidedObj = null;   isCollide = false;
+
+        // 시작한지 0.5초 뒤에 모든 구슬의 고정을 풀고 머지 버블을 한번 호출함
+        StartCoroutine(Wait(waitTime));
     }
 
     private void FixedUpdate()
@@ -69,6 +74,26 @@ public class MergeBubble : MonoBehaviour
     {
         isCollide = true;
         collidedObj = c;
+        // 충돌 감지
+        // Debug.Log("충돌 감지 : " + c.gameObject.name + " 와 충돌함");
         transform.GetComponent<Rigidbody2D>().freezeRotation = true;
+    }
+
+    IEnumerator Wait(float wTime)
+    {
+        // Debug.Log(wTime + "후에 구슬 부착하도록 함");
+        yield return new WaitForSeconds(wTime);
+
+        // 우선 리지드 바디의 고정을 풂
+        rb.constraints &= ~(
+            RigidbodyConstraints2D.FreezePositionX | 
+            RigidbodyConstraints2D.FreezePositionY);
+
+        // 구슬을 고정하는 fj를 비활성화 한다.
+        FixedJoint2D fj = this.GetComponent<FixedJoint2D>();
+        fj.enabled = false;
+
+        // 리지드 바디의 bodyType을 kinetic에서 dynamic으로 바꾼다.
+        rb.bodyType = RigidbodyType2D.Dynamic;
     }
 }
