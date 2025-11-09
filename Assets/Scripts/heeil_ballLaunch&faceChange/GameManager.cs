@@ -156,6 +156,8 @@ public class GameManager : MonoBehaviour
     }
 
     // 🔹 공 발사
+
+    public GameObject pairy;
     public void FireBall()
     {
         if (currentBall == null)
@@ -179,6 +181,7 @@ public class GameManager : MonoBehaviour
         bc.Fire();
         canFire = false;
         Debug.Log("💥 공 발사!");
+        // pairy.gameObject.GetComponent<FairyTiltMotion>();
 
         StartCoroutine(ReloadAfterDelay(fireLimitTime));
     }

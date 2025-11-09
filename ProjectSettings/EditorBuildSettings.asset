@@ -11,9 +11,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/heeil_Title.unity
     guid: d7c497c08c4791c46af7f8fd128f53d7
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/heeil_ballLaunch&faceChange.unity
     guid: 8c8aad83cb5bfbf44b520023d2b59ee3
+  - enabled: 1
+    path: Assets/Scenes/SeoHee_Scene_JinSeungHo_IngameSceneMerge.unity
+    guid: 47658df8488d8574bb7994bfa01fe318
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0
