@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class DeleteBubble : MonoBehaviour
@@ -17,6 +18,8 @@ public class DeleteBubble : MonoBehaviour
         // 버블 층 초기화
         bubbleFloor = new GameObject[floorNumber][];
 
+        floorNumber = GetComponent<SaveFloorNumber>().floorNumber;
+
         for (int i = 0; i < floorNumber; i++)
         {
             string floorNumStr = "Floor" + i.ToString();
@@ -29,10 +32,10 @@ public class DeleteBubble : MonoBehaviour
     void Start()
     {
         // log로 확인
-        //for(int i = 0;i  < floorNumber; i++)
-        //{
-        //    Debug.Log(i + "층의 개수는 : " + bubbleFloor[i].Length);
-        //}
+        for (int i = 0; i < floorNumber; i++)
+        {
+            Debug.Log(i + "층의 개수는 : " + bubbleFloor[i].Length);
+        }
     }
 
     // Update is called once per frame

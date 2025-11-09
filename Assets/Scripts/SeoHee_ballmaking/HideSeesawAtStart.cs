@@ -9,22 +9,22 @@ public class HideSeesawExceptBar : MonoBehaviour
 
     void Awake()
     {
-        // 바가 지정되어 있으면 활성 상태 유지
-        if (seesawBar != null)
-        {
-            seesawBar.SetActive(true);
-        }
-        else
-        {
-            Debug.LogWarning("seesawBar가 할당되지 않았습니다.");
-        }
+        //// 바가 지정되어 있으면 활성 상태 유지
+        //if (seesawBar != null)
+        //{
+        //    seesawBar.SetActive(true);
+        //}
+        //else
+        //{
+        //    Debug.LogWarning("seesawBar가 할당되지 않았습니다.");
+        //}
 
-        // 숨기고 싶은 오브젝트들은 비활성화
+        // 숨기고 싶은 오브젝트들은 비활성화 => 숨기고 싶은 오브젝트는 메쉬 렌더러 비활성화
         foreach (var obj in hideObjects)
         {
             if (obj != null)
             {
-                obj.SetActive(false);
+                obj.GetComponent<SpriteRenderer>().enabled = false;
             }
         }
     }
