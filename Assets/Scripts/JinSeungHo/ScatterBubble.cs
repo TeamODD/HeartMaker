@@ -8,29 +8,27 @@ public class ScatterBubble : MonoBehaviour
     GameObject[] bubbles;
     string bubbleLayerName = "Bubble";
 
-    private void Start()
+    // 게임오버매니저에서 호출될 함수
+    // 게임 오버시 구슬들이 중력의 작용(-1, 위로 가야하므로)받아서 위로 떨어짐
+    public void ScatteringBubble()
     {
         List<GameObject> foundBubble = new List<GameObject>();
         int targetLayer = LayerMask.NameToLayer(bubbleLayerName);
 
         // CS0618 때문에 정렬 포함된 거로 함
         GameObject[] allGameObj = FindObjectsByType<GameObject>(FindObjectsSortMode.None);
-        
+
         foreach (GameObject obj in allGameObj)
         {
-            if (obj.layer == targetLayer) {
+            if (obj.layer == targetLayer)
+            {
                 foundBubble.Add(obj);
             }
         }
 
         // 찾아낸 모든 버블들을 배열에 저장
         bubbles = foundBubble.ToArray();
-    }
 
-    // 게임오버매니저에서 호출될 함수
-    // 게임 오버시 구슬들이 중력의 작용(-1, 위로 가야하므로)받아서 위로 떨어짐
-    public void ScatteringBubble()
-    {
         foreach (GameObject b in bubbles)
         {
             // 우선 버블이 다시 중력의 영향을 받게 함

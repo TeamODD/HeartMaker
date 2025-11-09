@@ -38,6 +38,8 @@ public class UIManager : MonoBehaviour
     {
         // 페이드 아웃 코루틴 시작
         StartCoroutine(GameOverUIAppear());
+        // 3초 대기후 게임 멈춤
+        StartCoroutine(Wait(3));
     }
 
     // 게임을 재시작하는 버튼
@@ -81,13 +83,14 @@ public class UIManager : MonoBehaviour
             // 색의 투명도 = 새롭게 계산된 투명도
             c.a = newAlpha;
             fadeBlack.color = c;
+            Debug.Log("밝기가 줄어들음");
 
             // 다음 프레임까지 기다린 후 코루틴 재개
             yield return null;
         }
 
         // 코루틴이 끝나면 확실한 페이드 아웃을 위해 최종 값을 대입
-        c.a = endAlpha;
+        c.a = fadeoutAmount;
         fadeBlack.color = c;
     }
 
@@ -109,5 +112,13 @@ public class UIManager : MonoBehaviour
         // 두 버튼의 리스너를 추가
         mainButton.onClick.AddListener(TaskMainButtonOnClick);
         restartButton.onClick.AddListener(TaskRestartButtonOnClick);
+    }
+
+    IEnumerator Wait(float delay)
+    {
+        // 3초후에 게임 자체가 멈춤
+        yield return new WaitForSeconds(delay);
+
+        Time.timeScale = 0;
     }
 }

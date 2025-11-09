@@ -7,7 +7,9 @@ public class EscGameStopManager : MonoBehaviour
 {
     public Image fadeBlackImg;
     public Button resumeButton;
+    public GameObject gameOverManager;
     private bool isStop = false;
+    private bool isGameOver = false;
 
     private void Start()
     {
@@ -17,6 +19,8 @@ public class EscGameStopManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        bool isGameOver = gameOverManager.GetComponent<GameOverManager>().isGameOver;
+        if (isGameOver) return;
         if (isStop)
         {
             // 시간 정지
