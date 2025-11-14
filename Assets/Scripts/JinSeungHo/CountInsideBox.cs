@@ -8,10 +8,10 @@ public class CountInsideBox : MonoBehaviour
     private void Update()
     {
         // 버블 개수를 잘 감지하는 지 확인하는 임시 디버그
-        if (Input.GetKeyDown(KeyCode.UpArrow)) {
-            GetChildCheckBubble();
-            // Debug.Log(this.transform.name + "에 있는 버블 개수 : " + currentObjCount);
-        }
+        //if (Input.GetKeyDown(KeyCode.UpArrow)) {
+        //    GetChildCheckBubble();
+        //    Debug.Log(this.transform.name + "에 있는 버블 개수 : " + currentObjCount);
+        //}
     }
 
     private void OnTriggerExit2D(Collider2D collision)
