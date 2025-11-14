@@ -7,10 +7,11 @@ public class EscGameStopManager : MonoBehaviour
 {
     public Image fadeBlackImg;
     public Button resumeButton;
-    public GameObject gameOverManager;
+    public GameObject gameEndManager;
     public GameObject panel;
     private bool isStop = false;
     private bool isGameOver = false;
+    private bool isGameClear = false;
 
     private void Start()
     {
@@ -20,8 +21,10 @@ public class EscGameStopManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        bool isGameOver = gameOverManager.GetComponent<GameOverManager>().isGameOver;
-        if (isGameOver) return;
+        isGameOver = gameEndManager.GetComponent<GameOverManager>().isGameOver;
+        isGameClear = gameEndManager.GetComponent <GameClearManager>().isGameClear;
+
+        if (isGameOver || isGameClear) return;
         if (isStop)
         {
             // 시간 정지

@@ -3,6 +3,9 @@ using UnityEngine;
 
 public class GameOverManager : MonoBehaviour
 {
+    // 게임이 끝났을 때 요정이 던지는 것을 비활성화 하기 위해 가져옴
+    public GameObject gameLogicManager;
+
     // 왼쪽 오른쪽의 버블 차이를 계산할 목적으로 가져옴
     public GameObject leftBoxArea;
     public GameObject rightBoxArea;
@@ -35,9 +38,11 @@ public class GameOverManager : MonoBehaviour
 
             Debug.Log("게임 오버");
 
-            // UI를 부름
+            // UI 호출 및 게임 종료
             GetComponent<UIManager>().setUI();
 
+            // 요정이 버블을 던지는 코드 비활성화
+            gameLogicManager.GetComponent<GameManager>().enabled = false;
             // 게임 오버가 되면 모든게 끝나므로 코드 비활성화
             this.enabled = false;
         }

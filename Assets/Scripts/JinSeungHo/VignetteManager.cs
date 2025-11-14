@@ -18,10 +18,14 @@ public class VignetteManager : MonoBehaviour
     private float targetIntensity;      // 목표 비네트 강도
     public float changeSpeed = 1;       // 비네트 변화 속도
     private float intensityPerBubble;         // 버블 하나당 변화될 비네트 강도
+    [Header("비네트가 시작하는 최소 조건, 비네트가 최대로 변할 조건")]
     public int maxDiffBubble;
+    public int minDiffBubble;
+    
     // 층별 감지 박스를 저장할 리스트 변수
     private GameObject[][] detectBox;
 
+    [Header("게임 오버 판정 + 왼쪽 오른쪽 차이 확인")]
     public GameObject leftArea;
     public GameObject rightArea;
     // 게임 오버 조건 충족시 게임 오버 판정을 내기 위해 게임 오버 매니저 받아옴
@@ -35,7 +39,7 @@ public class VignetteManager : MonoBehaviour
         {
             currentIntensity = 0;
             targetIntensity = 0;
-            intensityPerBubble = maxIntensity / (float)maxDiffBubble;
+            intensityPerBubble = maxIntensity / (float)(maxDiffBubble - minDiffBubble);
 
             vig.intensity.value = 0;
             vig.color.value = Color.red;
@@ -111,6 +115,12 @@ public class VignetteManager : MonoBehaviour
             }
             else
             {   // 아니라면 비네트 세기를 차이수에 비례해 저장
+                // 추가: 만약 최소 버블량을 미달성시 변하지 않음
+                if (diff - minDiffBubble < 0)
+                    diff = 0;
+                else
+                    diff = diff - minDiffBubble;
+
                 targetIntensity = diff * intensityPerBubble;
             }
             // 서서히 비네트가 목표 비네트 세기로 변하는 방향으로 지정
@@ -123,7 +133,7 @@ public class VignetteManager : MonoBehaviour
         if (secondToLastFloorBubbleCount > 0)
         {
             targetIntensity = maxIntensity;
-            currentIntensity = Mathf.Lerp(currentIntensity, targetIntensity, Time.deltaTime / changeSpeed);
+            currentIntensity = Mathf.Lerp(currentIntensity, targetIntensity, Time.deltaTime * changeSpeed);
             vig.intensity.value = currentIntensity;     // 비네트 세기 적용
         }
 

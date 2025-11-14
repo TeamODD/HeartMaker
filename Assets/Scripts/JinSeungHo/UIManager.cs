@@ -10,6 +10,7 @@ public class UIManager : MonoBehaviour
 
     // 직접적으로 UI를 관리
     public Image gameOverTextImg;
+    public Image gameClearTextImg;
     public Image fadeBlack;
     public Button mainButton;
     public Button restartButton;
@@ -28,6 +29,7 @@ public class UIManager : MonoBehaviour
         //canvasObj.SetActive(false);
         // fadeBlack 이미지를 제외하고 전부 비활성화
         gameOverTextImg.gameObject.SetActive(false);
+        gameClearTextImg.gameObject.SetActive(false);
         mainButton.gameObject.SetActive(false);
         restartButton.gameObject.SetActive(false);
         resumeButton.gameObject.SetActive(false);
@@ -36,10 +38,26 @@ public class UIManager : MonoBehaviour
     // 호출시 UI를 전부 보여주고, 활성화함
     public void setUI()
     {
-        // 페이드 아웃 코루틴 시작
-        StartCoroutine(GameOverUIAppear());
-        // 3초 대기후 게임 멈춤
-        StartCoroutine(Wait(3));
+        // 게임 클리어, 게임 오버 여부 판단
+        if (GetComponent<GameClearManager>().isGameClear)
+        {
+            // 게임 클리어 시
+
+            // 게임 클리어 페이드 아웃 코루틴 시작
+            StartCoroutine(GameClearUIAppear());
+
+            // 3초 대기후 게임 멈춤
+            StartCoroutine(Wait(3));
+        }
+        else
+        {
+            // 게임 오버시
+
+            // 게임 오버 페이드 아웃 코루틴 시작
+            StartCoroutine(GameOverUIAppear());
+            // 3초 대기후 게임 멈춤
+            StartCoroutine(Wait(3));
+        }
     }
 
     // 게임을 재시작하는 버튼
@@ -106,6 +124,26 @@ public class UIManager : MonoBehaviour
 
         // 페이드 아웃이 끝나면 다시 전부 활성화
         gameOverTextImg.gameObject.SetActive(true);
+        mainButton.gameObject.SetActive(true);
+        restartButton.gameObject.SetActive(true);
+
+        // 두 버튼의 리스너를 추가
+        mainButton.onClick.AddListener(TaskMainButtonOnClick);
+        restartButton.onClick.AddListener(TaskRestartButtonOnClick);
+    }
+    
+    IEnumerator GameClearUIAppear()
+    {
+        // 원래부터 UI가 활성화 된 상태로 하고, fadeBlack을 제외한 나머지 것들이 비활성화 되도록 함
+        //// 그 이후에 UI를 활성화
+        //// UI 활성화
+        //canvasObj.SetActive(true);
+
+        // 페이드 아웃 실행
+        yield return StartCoroutine(Fade(0, fadeoutAmount));
+
+        // 페이드 아웃이 끝나면 다시 전부 활성화
+        gameClearTextImg.gameObject.SetActive(true);
         mainButton.gameObject.SetActive(true);
         restartButton.gameObject.SetActive(true);
 
