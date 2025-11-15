@@ -10,9 +10,10 @@ public class BallController : MonoBehaviour
     [SerializeField] private string color;
     [SerializeField] private Vector2 upWard;
 
-    [Header("효광음 속성")]
+    [Header("효과음 속성")]
     [SerializeField] private AudioClip shotClip;
     [SerializeField] private AudioClip attachedClip;
+    [SerializeField] private AudioClip removedClip;
     private AudioSource sfx;
 
     [Header("발사 속성")]
@@ -21,6 +22,12 @@ public class BallController : MonoBehaviour
     public float launchSpeed;
     public float maxAimAngle = 120;
     public float aimMoveSpeed = 40;
+
+    [Header("색깔별 이펙트 프리팹")]
+    public GameObject splashEffectRed;
+    public GameObject splashEffectBlue;
+    public GameObject splashEffectYellow;
+    public GameObject splashEffectGreen;
 
     private Rigidbody2D rb;
     private bool isRegistered = false;
@@ -155,14 +162,45 @@ public class BallController : MonoBehaviour
             Debug.Log($"💥 연결된 같은 색 구슬 {group.Count}개 → 삭제");
 
             var board = FindObjectOfType<BoardManager>();
-            var effectSpawner = FindObjectOfType<GemEffectSpawner>();
 
             foreach (var gem in group)
             {
-                effectSpawner?.SpawnEffect(gem.gemType, gem.transform.position);
+                SpawnEffect(gem.gemType, gem.transform.position);
                 board?.RemoveGem(gem);
                 Destroy(gem.gameObject);
             }
+        }
+    }
+
+    void SpawnEffect(GemType type, Vector3 position)
+    {
+        GameObject prefab = GetEffectPrefab(type);
+        if (prefab != null)
+        {
+            Instantiate(prefab, position, Quaternion.identity);
+
+            // ✅ 이펙트 위치에서 삭제 효과음 재생
+            if (removedClip != null)
+            {
+                AudioSource.PlayClipAtPoint(removedClip, position);
+                Debug.Log("🔊 삭제 효과음 재생됨 (이펙트 위치)");
+            }
+        }
+        else
+        {
+            Debug.LogWarning($"🚫 이펙트 프리팹이 없습니다: {type}");
+        }
+    }
+
+    GameObject GetEffectPrefab(GemType type)
+    {
+        switch (type)
+        {
+            case GemType.Red: return splashEffectRed;
+            case GemType.Blue: return splashEffectBlue;
+            case GemType.Yellow: return splashEffectYellow;
+            case GemType.Green: return splashEffectGreen;
+            default: return null;
         }
     }
 }
