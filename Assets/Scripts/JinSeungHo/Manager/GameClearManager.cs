@@ -5,18 +5,21 @@ using UnityEngine.UI;
 
 public class GameClearManager : MonoBehaviour
 {
-    // °ÔÀÓÀÌ ³¡³µÀ» ¶§ ¿äÁ¤ÀÌ ´øÁö´Â °ÍÀ» ºñÈ°¼ºÈ­ ÇÏ±â À§ÇØ °¡Á®¿È
+    // ê²Œì„ì´ ëë‚¬ì„ ë•Œ ìš”ì •ì´ ë˜ì§€ëŠ” ê²ƒì„ ë¹„í™œì„±í™” í•˜ê¸° ìœ„í•´ ê°€ì ¸ì˜´
     public GameObject gameLogicManager;
 
-    [Header("¿ŞÂÊ ¿À¸¥ÂÊ °¡¿îµ¥ ¹öºí ÃøÁ¤ ¹Ú½º ±¸¿ª")]
+    [Header("ì™¼ìª½ ì˜¤ë¥¸ìª½ ê°€ìš´ë° ë²„ë¸” ì¸¡ì • ë°•ìŠ¤ êµ¬ì—­")]
     public GameObject leftArea;
     public GameObject rightArea;
     public GameObject middleArea;
 
-    // °ÔÀÓ Å¬¸®¾î°¡ ´Ş¼ºµÇ¾ú´ÂÁö UIManager.cs¿¡¼­ Âü°íÇÒ ¿¹Á¤
+    [Header("ê²Œì„ í´ë¦¬ì–´ ì¡°ê±´: ëª¨ë“  ë²„ë¸” ê°¯ìˆ˜ê°€ ì´ ìˆ«ìë³´ë‹¤ ì‘ì„ ë•Œ")]
+    public int gameClearBubbleCount = 5;
+
+    // ê²Œì„ í´ë¦¬ì–´ê°€ ë‹¬ì„±ë˜ì—ˆëŠ”ì§€ UIManager.csì—ì„œ ì°¸ê³ í•  ì˜ˆì •
     public bool isGameClear = false;
 
-    // 2ÃÊ µÚ¿¡ ÀÌ Á¶°ÇÀ» true·Î ¹Ù²Ù±â
+    // 2ì´ˆ ë’¤ì— ì´ ì¡°ê±´ì„ trueë¡œ ë°”ê¾¸ê¸°
     private bool isGameStart = false;
 
     private void Start()
@@ -32,15 +35,17 @@ public class GameClearManager : MonoBehaviour
             int rightBubble = rightArea.GetComponent<CountInsideBox>().currentObjCount;
             int middleBubble = middleArea.GetComponent<CountInsideBox>().currentObjCount;
 
-            if ((leftBubble == 0 && rightBubble == 0 && middleBubble == 0) || isGameClear)
+            int allBubble = leftBubble + rightBubble + middleBubble;
+
+            if (allBubble < gameClearBubbleCount || isGameClear)
             {
-                // °ÔÀÓ Å¬¸®¾î »óÅÂ·Î º¯È¯
+                // ê²Œì„ í´ë¦¬ì–´ ìƒíƒœë¡œ ë³€í™˜
                 isGameClear = true;
-                // UI È£Ãâ ¹× °ÔÀÓ Á¾·á
+                // UI í˜¸ì¶œ ë° ê²Œì„ ì¢…ë£Œ
                 GetComponent<UIManager>().setUI();
-                // ¿äÁ¤ÀÌ ¹öºíÀ» ´øÁö´Â ÄÚµå ºñÈ°¼ºÈ­
+                // ìš”ì •ì´ ë²„ë¸”ì„ ë˜ì§€ëŠ” ì½”ë“œ ë¹„í™œì„±í™”
                 gameLogicManager.GetComponent<GameManager>().enabled = false;
-                // °ÔÀÓ ¿À¹ö°¡ µÇ¸é ¸ğµç°Ô ³¡³ª¹Ç·Î ÄÚµå ºñÈ°¼ºÈ­
+                // ê²Œì„ ì˜¤ë²„ê°€ ë˜ë©´ ëª¨ë“ ê²Œ ëë‚˜ë¯€ë¡œ ì½”ë“œ ë¹„í™œì„±í™”
                 this.enabled = false;
             }
         }
@@ -48,10 +53,10 @@ public class GameClearManager : MonoBehaviour
 
     IEnumerator Wait(float delay)
     {
-        // delay ¸¸Å­ ÀÌ ½ºÅ©¸³Æ® ¸ØÃã
+        // delay ë§Œí¼ ì´ ìŠ¤í¬ë¦½íŠ¸ ë©ˆì¶¤
         yield return new WaitForSeconds(delay);
 
-        // Debug.Log("ÃøÁ¤ ½ÃÀÛ");
-        isGameStart = true; // 3ÃÊ µÚ¿¡ ¹öºí ¼ö ÃøÁ¤ ½ÃÀÛ
+        // Debug.Log("ì¸¡ì • ì‹œì‘");
+        isGameStart = true; // 3ì´ˆ ë’¤ì— ë²„ë¸” ìˆ˜ ì¸¡ì • ì‹œì‘
     }
 }
