@@ -25,7 +25,6 @@ public class GameManager : MonoBehaviour
     [Header("발사 속성")]
     [SerializeField] private GameObject clickPanel;
     [SerializeField] private GameObject currentBall;
-    [SerializeField] private TextMeshProUGUI countText;
     [SerializeField] private float maxAimAngle = 120f;
     [SerializeField] private float aimMoveSpeed = 50f;
     [SerializeField] private float launchSpeed = 10f;
@@ -46,7 +45,6 @@ public class GameManager : MonoBehaviour
     {
         faceSpriteRenderer = face.GetComponent<SpriteRenderer>();
         faceSpriteRenderer.sprite = defaultFaceSprite;
-        countText.text = "";
 
         currentIndex = Random.Range(0, ballSprites.Length);
         nextIndex = Random.Range(0, ballSprites.Length);
