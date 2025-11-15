@@ -80,7 +80,17 @@ public class BallController : MonoBehaviour
         if (launched) return;
 
         if (shotClip != null)
+        {
             sfx.PlayOneShot(shotClip);
+
+            // Debug.Log($"[SpawnEffect] deleteSfx="
+            // + $"{deleteSfx.name}, "
+            // + $"active={deleteSfx.gameObject.activeInHierarchy}, "
+            // + $"enabled={deleteSfx.enabled}, "
+            // + $"clip={(deleteSfx.clip != null ? deleteSfx.clip.name : "NULL")}, "
+            // + $"volume={deleteSfx.volume}");
+        }
+            
 
         rb.AddForce(transform.up * launchSpeed, ForceMode2D.Impulse);
         launched = true;
@@ -191,6 +201,12 @@ public class BallController : MonoBehaviour
                 // AudioSource.PlayClipAtPoint(removedClip, position);
                 deleteSfx.Play();
                 Debug.Log("🔊 삭제 효과음 재생됨 (이펙트 위치)");
+                // Debug.Log($"[SpawnEffect] deleteSfx="
+                // + $"{deleteSfx.name}, "
+                // + $"active={deleteSfx.gameObject.activeInHierarchy}, "
+                // + $"enabled={deleteSfx.enabled}, "
+                // + $"clip={(deleteSfx.clip != null ? deleteSfx.clip.name : "NULL")}, "
+                // + $"volume={deleteSfx.volume}");
             }
         }
         else
