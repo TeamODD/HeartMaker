@@ -111,6 +111,7 @@ MonoBehaviour:
   shotClip: {fileID: 8300000, guid: 0c35ffeb7a0313a4ab6607d057d1c47d, type: 3}
   attachedClip: {fileID: 8300000, guid: e15c4abb349ebc94ea4138e4e46ab79c, type: 3}
   removedClip: {fileID: 8300000, guid: a9a508533071ec942b3dcf3043e467eb, type: 3}
+  deleteSfx: {fileID: 6597125173502412801, guid: 14ee8ff95616c0c40adcbe88ede68978, type: 3}
   arrow: {fileID: 2560368731711724879}
   launched: 0
   launchSpeed: 0

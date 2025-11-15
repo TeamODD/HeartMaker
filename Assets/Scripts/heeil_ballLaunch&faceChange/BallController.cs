@@ -15,6 +15,7 @@ public class BallController : MonoBehaviour
     [SerializeField] private AudioClip attachedClip;
     [SerializeField] private AudioClip removedClip;
     private AudioSource sfx;
+    public AudioSource deleteSfx;
 
     [Header("발사 속성")]
     [SerializeField] private GameObject arrow;
@@ -166,6 +167,8 @@ public class BallController : MonoBehaviour
             foreach (var gem in group)
             {
                 SpawnEffect(gem.gemType, gem.transform.position);
+
+
                 board?.RemoveGem(gem);
                 Destroy(gem.gameObject);
             }
@@ -182,7 +185,8 @@ public class BallController : MonoBehaviour
             // ✅ 이펙트 위치에서 삭제 효과음 재생
             if (removedClip != null)
             {
-                AudioSource.PlayClipAtPoint(removedClip, position);
+                // AudioSource.PlayClipAtPoint(removedClip, position);
+                deleteSfx.PlayOneShot(removedClip);
                 Debug.Log("🔊 삭제 효과음 재생됨 (이펙트 위치)");
             }
         }
