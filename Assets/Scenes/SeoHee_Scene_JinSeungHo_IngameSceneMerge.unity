@@ -779,7 +779,6 @@ MonoBehaviour:
   settingIntervalTime: 0.7
   fireLimitTime: 5
   countDown: 3
-  pairy: {fileID: 0}
 --- !u!4 &92910355
 Transform:
   m_ObjectHideFlags: 0
@@ -1578,16 +1577,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   totalRows: 6
   bubbleSpacing: 0.66
-  rowOffset: 0.5
   verticalSpacing: 0.58
-  seesaw: {fileID: 2123824737}
   gapFromSeesaw: 0.47
+  seesaw: {fileID: 2123824737}
   gemPrefabs:
   - {fileID: 240892663}
   - {fileID: 4696231677242890905}
   - {fileID: 7326845761242138399}
   - {fileID: 5139152348263891303}
-  bubble: {fileID: 887682612}
+  allGems: []
 --- !u!114 &205125605
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2789,6 +2787,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4862822164948385095, guid: 136d2caccd61d2445a0d6770dfcbdabe, type: 3}
   m_PrefabInstance: {fileID: 1266553949}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &380148999 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 926890098832219932, guid: dbc8ee00583ddff4ab130805a03597f7, type: 3}
+  m_PrefabInstance: {fileID: 1138653295}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e0f63a944fc68ef439577b1b55e699bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &393399350 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4862822164948385095, guid: 136d2caccd61d2445a0d6770dfcbdabe, type: 3}
@@ -18526,7 +18535,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: -100
   m_Sprite: {fileID: -7443756053782179069, guid: 5e65c7ec3a9c43343bc2e70b4e38d4c3, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -19013,6 +19022,18 @@ MonoBehaviour:
       - m_Target: {fileID: 92910354}
         m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
         m_MethodName: OnClickBackGround
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 380148999}
+        m_TargetAssemblyTypeName: FairyGrabThrow, Assembly-CSharp
+        m_MethodName: SetThrow
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
