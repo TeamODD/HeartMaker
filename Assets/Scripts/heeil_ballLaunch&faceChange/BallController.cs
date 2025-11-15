@@ -21,8 +21,8 @@ public class BallController : MonoBehaviour
     [SerializeField] private GameObject arrow;
     public bool launched = false;
     public float launchSpeed;
-    public float maxAimAngle = 120;
-    public float aimMoveSpeed = 40;
+    public float maxAimAngle = 180;
+    public float aimMoveSpeed = 100;
 
     [Header("색깔별 이펙트 프리팹")]
     public GameObject splashEffectRed;
@@ -80,7 +80,17 @@ public class BallController : MonoBehaviour
         if (launched) return;
 
         if (shotClip != null)
+        {
             sfx.PlayOneShot(shotClip);
+
+            // Debug.Log($"[SpawnEffect] deleteSfx="
+            // + $"{deleteSfx.name}, "
+            // + $"active={deleteSfx.gameObject.activeInHierarchy}, "
+            // + $"enabled={deleteSfx.enabled}, "
+            // + $"clip={(deleteSfx.clip != null ? deleteSfx.clip.name : "NULL")}, "
+            // + $"volume={deleteSfx.volume}");
+        }
+            
 
         rb.AddForce(transform.up * launchSpeed, ForceMode2D.Impulse);
         launched = true;
@@ -166,9 +176,12 @@ public class BallController : MonoBehaviour
 
             foreach (var gem in group)
             {
+                deleteSfx.Play();
                 SpawnEffect(gem.gemType, gem.transform.position);
+            }
 
-
+            foreach (var gem in group)
+            {
                 board?.RemoveGem(gem);
                 Destroy(gem.gameObject);
             }
@@ -186,8 +199,14 @@ public class BallController : MonoBehaviour
             if (removedClip != null)
             {
                 // AudioSource.PlayClipAtPoint(removedClip, position);
-                deleteSfx.PlayOneShot(removedClip);
+                deleteSfx.Play();
                 Debug.Log("🔊 삭제 효과음 재생됨 (이펙트 위치)");
+                // Debug.Log($"[SpawnEffect] deleteSfx="
+                // + $"{deleteSfx.name}, "
+                // + $"active={deleteSfx.gameObject.activeInHierarchy}, "
+                // + $"enabled={deleteSfx.enabled}, "
+                // + $"clip={(deleteSfx.clip != null ? deleteSfx.clip.name : "NULL")}, "
+                // + $"volume={deleteSfx.volume}");
             }
         }
         else
