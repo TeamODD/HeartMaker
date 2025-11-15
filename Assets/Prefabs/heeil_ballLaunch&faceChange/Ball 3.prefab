@@ -110,11 +110,16 @@ MonoBehaviour:
   upWard: {x: 0, y: 0}
   shotClip: {fileID: 8300000, guid: 0c35ffeb7a0313a4ab6607d057d1c47d, type: 3}
   attachedClip: {fileID: 8300000, guid: e15c4abb349ebc94ea4138e4e46ab79c, type: 3}
+  removedClip: {fileID: 8300000, guid: a9a508533071ec942b3dcf3043e467eb, type: 3}
   arrow: {fileID: 2560368731711724879}
   launched: 0
   launchSpeed: 0
   maxAimAngle: 60
   aimMoveSpeed: 50
+  splashEffectRed: {fileID: 0}
+  splashEffectBlue: {fileID: 0}
+  splashEffectYellow: {fileID: 0}
+  splashEffectGreen: {fileID: 0}
 --- !u!50 &1534017500830147238
 Rigidbody2D:
   serializedVersion: 5
@@ -292,6 +297,8 @@ MonoBehaviour:
     m_Bits: 64
   leftArea: {fileID: 0}
   rightArea: {fileID: 0}
+  middleArea: {fileID: 0}
+  sfxBubbleAttach: {fileID: 0}
   isCollide: 0
   waitTime: 0.5
 --- !u!114 &6662887425659159180
